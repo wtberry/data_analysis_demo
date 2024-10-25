@@ -1,4 +1,5 @@
 pandas
 pygwalker
 streamlit
+streamlit-authenticator
 watchdog
