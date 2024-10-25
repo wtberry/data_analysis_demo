@@ -8,6 +8,8 @@ st.set_page_config(
     layout="wide",
 )
 
+st.title("Data Analysis Dashboard Demo")
+
 # uploaded file
 uploaded_file = st.file_uploader("Upload a csv file", type=["csv"])
 
