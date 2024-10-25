@@ -1,0 +1,4 @@
+pandas
+pygwalker
+streamlit
+watchdog
