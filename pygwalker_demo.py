@@ -2,7 +2,6 @@ from pygwalker.api.streamlit import StreamlitRenderer
 import pandas as pd
 import streamlit as st
 import streamlit_authenticator as stauth
-from streamlit_authenticator.utilities.exceptions import LoginError
 import yaml
 from yaml.loader import SafeLoader
 
@@ -26,18 +25,20 @@ st.set_page_config(
 
 st.title("Data Analysis Dashboard Demo")
 
-# user auth logic here
-with open("config.yaml", "r") as f:
-    config = yaml.load(f, Loader=SafeLoader)
-
 
 # Please remember to pass the authenticator object to each and every page in a multi-page application as a session state variable.
 
+credentials = {
+	"usernames": {
+		k: dict(v) for k, v in st.secrets["credentials"]["usernames"].items()
+	},
+}
+
 authenticator = stauth.Authenticate(
-    credentials=config["credentials"],
-    cookie_name=config["cookie"]["name"],
-    cookie_key=config["cookie"]["key"],
-    cookie_expiry_days=config["cookie"]["expiry_days"],
+    credentials=credentials,
+    cookie_name=st.secrets["cookie"]["name"],
+    cookie_key=st.secrets["cookie"]["key"],
+    cookie_expiry_days=st.secrets["cookie"]["expiry_days"],
     auto_hash=False
 )
 
