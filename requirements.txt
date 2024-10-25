@@ -2,3 +2,4 @@ pandas
 pygwalker
 streamlit
 watchdog
+openpyxl
