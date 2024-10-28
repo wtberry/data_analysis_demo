@@ -39,7 +39,7 @@ if uploaded_file is not None:
             pass
             # wrong file type should be already handled in st.file_uploader
     except UnicodeDecodeError:
-        st.error("The file is not encoded in UTF-8. Please select a different encoding.")
+        st.error(f"The file is not encoded in {encoding}. Please select a different encoding.")
     else:
         pyg_app = StreamlitRenderer(df)
         pyg_app.explorer()
