@@ -3,3 +3,4 @@ pygwalker
 streamlit
 watchdog
 openpyxl
+pandasai

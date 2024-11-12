@@ -1,3 +1,5 @@
 [data]
 encoding_default = "utf-8"
 encoding_options = ["utf-8", "shift_jis", "mac_turkish", "big5"]
+[chat]
+providers = ["openai", "azure"]
