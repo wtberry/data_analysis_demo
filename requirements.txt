@@ -1,7 +1,6 @@
+pandasai
 pandas
 pygwalker
 streamlit
 watchdog
 openpyxl
-pandasai
-yaml
