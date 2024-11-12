@@ -4,3 +4,4 @@ pygwalker
 streamlit
 watchdog
 openpyxl
+pyyaml
