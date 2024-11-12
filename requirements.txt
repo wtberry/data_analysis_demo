@@ -4,3 +4,4 @@ streamlit
 watchdog
 openpyxl
 pandasai
+yaml
