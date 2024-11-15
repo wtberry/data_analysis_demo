@@ -5,8 +5,59 @@ from pygwalker.api.streamlit import StreamlitRenderer
 import pandas as pd
 from pandasai.llm import OpenAI, AzureOpenAI
 from pandasai import SmartDataframe
+from pandasai import Agent
 from pandasai.responses.streamlit_response import StreamlitResponse
 import streamlit as st
+
+
+def chat_with_data(agent):
+
+    with st.chat_message("assistant"):
+        st.text("Hello! I'm here to help you with your transaction data 👏")
+    # initialize chat history
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = []
+    
+    # go through the chat history
+    for message in st.session_state["chat_history"]:
+        with st.chat_message(message["role"]):
+            # questions
+            if "question" in message:
+                st.text(message["question"])
+            # answers
+            elif "answer" in message:
+                st.write(message["answer"])
+            elif "error" in message:    
+                st.text(message["error"])
+
+    user_input = st.chat_input("Enter a question to ask the data", key="chat_input")
+
+    if user_input:
+        with st.chat_message("user"):
+            st.markdown(user_input)
+        # add the user input to the chat history
+        st.session_state["chat_history"].append({"role": "user", "question": user_input})
+        
+        # generate the response
+        try:
+            with st.spinner("AI is thinking..."):
+                response = agent.chat(user_input)
+                st.session_state["chat_history"].append({"role": "assistant", "answer": response})
+                st.write(response)
+        except Exception as e:
+            st.error(str(e))
+            error_message = "⚠️Sorry, Couldn't generate the answer! Please try rephrasing your question!"
+            st.session_state["chat_history"].append({"role": "assistant", "error": error_message})
+    
+    # function to clear the chat history
+    def clear_chat_history():
+        st.session_state["chat_history"] = []
+
+    st.button("Clear Chat History", on_click=clear_chat_history)
+
+
+
+
 
 st.set_page_config(
     page_title="Data Analysis Dashboard Demo",
@@ -107,7 +158,11 @@ elif uploaded_file is not None:
         # initialize chat agent
         if llm_provider == "openai":
             llm = OpenAI(api_token=llm_key)
-            agent = SmartDataframe(df, config={"llm": llm, "verbose":True, "response_parser": StreamlitResponse})
+            agent = Agent(
+                df, config={
+                    "llm":llm, "verbose":True, "response_parser":StreamlitResponse
+                }
+            )
             st.sidebar.success("Chat agent initialized successfully.")
         elif llm_provider == "azure":
             if all([azure_openai_endpoint_url, azure_openai_api_version, azure_openai_deployment_name]):
@@ -117,7 +172,11 @@ elif uploaded_file is not None:
                     api_version=azure_openai_api_version,
                     deployment_name=azure_openai_deployment_name,
                 )
-                agent = SmartDataframe(df, config={"llm": llm, "verbose":True, "response_parser": StreamlitResponse})
+                agent = Agent(
+                    df, config={
+                        "llm":llm, "verbose":True, "response_parser":StreamlitResponse
+                    }
+                )
                 st.sidebar.success("Chat agent initialized successfully.")
             else:
                 pass
@@ -140,10 +199,11 @@ with tab2:
         if llm_provider in agent_provider_options:
             if llm_key is not None and agent is not None:
                 st.markdown(f"#### {llm_provider} Chat")
-                user_input = st.chat_input(placeholder="Ask a question")
-                with st.spinner("AI is thinking..."):
-                    response = agent.chat(user_input)
-                    st.write(response)
+                # user_input = st.chat_input(placeholder="Ask a question")
+                # with st.spinner("AI is thinking..."):
+                #     response = agent.chat(user_input)
+                #     st.write(response)
+                chat_with_data(agent)
             else:
                 st.error(f"Please enter your {llm_provider} API key.")
         else:
